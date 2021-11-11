@@ -128,19 +128,19 @@ app.get('/leaderboard', function (req, res) {
 
 app.post('/login', function (req, res) {
   console.log(req.body);
+  let status=204;
   const data={
-    status:204,
     token:"",
     err:"Not found"
   };
   login.map((value)=>{
     if((req.body.username===value.username) && (req.body.password===value.password)){
       data.token=jwt.sign(req.body.password,'12345678');
-      data.status=200;
       data.err="";
+      status=200;
     }
   })
-  res.json(data);
+  res.status(status).json(data);
   res.end();
 })
 app.listen(port, () => {
