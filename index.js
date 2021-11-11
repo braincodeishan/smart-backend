@@ -103,8 +103,9 @@ app.get('/dashboard', function (req, res) {
 app.get('/leaderboard', function (req, res) {
   res.send(b)
 })
-app.get('/login', function (req, res) {
-  res.send(b)
+app.post('/login', function (req, res) {
+  console.log(req.username);
+  
 })
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
