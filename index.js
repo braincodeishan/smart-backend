@@ -1,5 +1,8 @@
 var express = require('express');
 var app = express();
+app.use(express.json());
+var jwt = require('jsonwebtoken');
+
 const port = 3001;
 const a =[
   {
@@ -83,11 +86,29 @@ const b=[
   }
 ];
 
-
+const login=[
+  {
+    username:'ishan',
+    password:'dev'
+  },
+  {
+    username:'ishan2021',
+    password:'12345'
+  },
+  {
+    username:'admin',
+    password:'admin'
+  },
+  {
+    username:'myadmin',
+    password:'myadmin'
+  }
+];
 
 
 
 var cors = require('cors');
+
 
 
 app.use(cors({
@@ -103,10 +124,24 @@ app.get('/dashboard', function (req, res) {
 app.get('/leaderboard', function (req, res) {
   res.send(b)
 })
+
+
 app.post('/login', function (req, res) {
   console.log(req.body);
-  res.json("Response from backend");
-  
+  const data={
+    status:204,
+    token:"",
+    err:"Not found"
+  };
+  login.map((value)=>{
+    if((req.body.username===value.username) && (req.body.password===value.password)){
+      data.token=jwt.sign(req.body.password,'12345678');
+      data.status=200;
+      data.err="";
+    }
+  })
+  res.json(data);
+  res.end();
 })
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
