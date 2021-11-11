@@ -104,7 +104,8 @@ app.get('/leaderboard', function (req, res) {
   res.send(b)
 })
 app.post('/login', function (req, res) {
-  console.log(req.username);
+  console.log(req.body);
+  res.json("Response from backend");
   
 })
 app.listen(port, () => {
