@@ -141,7 +141,7 @@ app.post('/login', function (req, res) {
     }
   })
   res.status(status).json(data);
-  res.end();
+  
 })
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
