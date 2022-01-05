@@ -1,115 +1,162 @@
-// let a=false;
-// let b=false;
-// let buy="BUY";
-// let sell="SELL";
-
-// // function taketrade(){
-// //     //take trade logic
-
-    
-// //     return true;
-
-// // }
-// // function selltrade(){
-// //     // sell trade logic
-// //     return true;
-
-// //    }
-
-// function showNotification(buy,scrip,floatprice)
-// {
-// const notification=new Notification(buy,{
-//   body: "Take "+buy+ " trade on " +scrip+ " at price "+ floatprice,
-//   icon: "https://img.favpng.com/12/19/20/050-trading-text-png-favpng-4i3VARbE16qDXhYdFszLmbgbs.jpg"
-// });
-// notification.onclick=(e)=>{
-// window.location.href="https://wazirx.com"
-// };
-// }
-
-// function checkNotification(buy,scrip,floatprice){
-// if(Notification.permission!=="granted"){
-//   showNotification(buy,scrip,floatprice);
-// } else if(Notification.permission!=="denied"){
-//   Notification.requestPermission().then(permission=>{
-//     if(permission==="granted")
-//     {
-//       showNotification(buy,scrip,floatprice);
-//     }
-//   })
-// }
-// }
+let appendbutton=document.getElementsByClassName("sc-iumJeC iSotjQ");
+let mybuttons=`<button id="turnonscriptishan" >Turn ON</button>
+<button id="turnoffscriptishan" >Turn OFF</button>`
+var node = document.createElement("div");
+node.innerHTML=mybuttons;
+appendbutton[0].appendChild(node);
 
 
 
-// function dataproc(){
-//   console.log("working on...");
-//   let macd=0.0;
-//   let signal=0.0;
-//   let scrip=document.getElementsByClassName("sc-gsTEea gYrKRI")[0].innerText;
-    
-//   const data= document.querySelector("iframe").contentDocument.querySelectorAll(".valueValue-2KhwsEwE");
-//     let price= document.getElementsByClassName("sc-gsTEea dvKsmJ");
-    
-
-//     console.log(price[0].innerText);
-
-//     let floatprice=price[0].innerText.replace('₹','');
-//     floatprice=parseFloat(floatprice.replace(',',''));
-//     console.log(floatprice);
 
 
-// //Conversion of string to number for comparision
-// if(data[9].innerText.indexOf("−")>-1)
-//   {
-//         macd= parseFloat(data[9].innerText.replace('−',''));
-//         macd=-macd;
-//   }else{
-//         macd= parseFloat(data[9].innerText);
-//   }
-//   if(data[10].innerText.indexOf("−")>-1)
-//   {
-//         signal= parseFloat(data[10].innerText.replace('−',''));
-//         signal=-signal;
-//   }else{
-//         signal= parseFloat(data[10].innerText);
-//   }
+const scripton=document.getElementById("turnonscriptishan")
+scripton.addEventListener('click',()=>{
+  setInterval(dataproc,10000);
+})
+const scriptoff=document.getElementById("turnoffscriptishan")
+scriptoff.addEventListener('click',()=>{
+  clearInterval();
+})
   
-//   // console.log(macd);
-//   // console.log(signal);
+
+
+
+
+let a=false;
+let b=false;
+let buy="buy";
+let sell="sell";
+
+async function taketrade(side,scrip,floatprice){
+  try{
+  
+    let qty=parseInt(10000/floatprice);
+    console.log("quantity to be purchased="+qty)
+  const res= await fetch('http://localhost:3001',{
+    method:'POST',
+    headers:{
+      'Content-Type': 'application/json'
+    },
+    body:JSON.stringify({
+      'symbol':scrip,
+      'side':side ,
+      'price':floatprice,
+      'quantity':qty,
+      
+    })
+  
+  });
+  const resJson= await res.json();
+
+  console.log(res);
+  console.log(resJson);
+  }catch(err){
+    console.log(err);
+  }
+return true;
+    
+    
+
+}
+
+
+function showNotification(side,scrip,floatprice)
+{
+const notification=new Notification(buy,{
+  body: "Taken "+side+ " trade on " +scrip+ " at price "+ floatprice,
+  icon: "https://img.favpng.com/12/19/20/050-trading-text-png-favpng-4i3VARbE16qDXhYdFszLmbgbs.jpg"
+});
+notification.onclick=(e)=>{
+window.location.href="https://wazirx.com"
+};
+}
+
+function checkNotification(side,scrip,floatprice){
+if(Notification.permission!=="granted"){
+  showNotification(side,scrip,floatprice);
+} else if(Notification.permission!=="denied"){
+  Notification.requestPermission().then(permission=>{
+    if(permission==="granted")
+    {
+      showNotification(side,scrip,floatprice);
+    }
+  })
+}
+}
+
+
+
+function dataproc(){
+  console.log("working on...");
+  let macd=0.0;
+  let signal=0.0;
+  let scrip=document.getElementsByClassName("sc-gsTEea gYrKRI")[0].innerText;
+  let scripmod=scrip.replace('/','')
+  scripmod=scripmod.toLowerCase();
+  console.log(scripmod);
+  const data= document.querySelector("iframe").contentDocument.querySelectorAll(".valueValue-2KhwsEwE");
+    let price= document.getElementsByClassName("sc-gsTEea dvKsmJ");
+    
+
+    // console.log(price[0].innerText);
+
+    let floatprice=price[0].innerText.replace('₹','');
+    floatprice=parseFloat(floatprice.replace(/,/g,''));
+    // console.log(floatprice);
+
+
+//Conversion of string to number for comparision
+if(data[9].innerText.indexOf("−")>-1)
+  {
+        macd= parseFloat(data[9].innerText.replace('−',''));
+        macd=-macd;
+  }else{
+        macd= parseFloat(data[9].innerText);
+  }
+  if(data[10].innerText.indexOf("−")>-1)
+  {
+        signal= parseFloat(data[10].innerText.replace('−',''));
+        signal=-signal;
+  }else{
+        signal= parseFloat(data[10].innerText);
+  }
+  
+  // console.log(macd);
+  // console.log(signal);
 
 
 
 
 
-// //Comparision for taking trades.
-// if((macd>=signal)&&(macd<0)&&(signal<0)){
-//       // console.log("inside buy trade");
-//       if(a===false){
-//       	checkNotification(buy,scrip,floatprice);
-//       }
-//         // if(b){
-//         //     console.log("Buy trade executed");
-//         //   b=false;
-//           a=true;
-//         // }
+//Comparision for taking trades.
+if((macd>=signal)&&(macd<0)&&(signal<0)){
+      // console.log("inside buy trade");
+      if(a===false){
+        b=taketrade(buy,scripmod,floatprice)
+      	
+      }
+        if(b){
+            checkNotification(buy,scrip,floatprice);
+          b=false;
+          a=true;
+        }
 
-//     }else if((macd<signal)&&(macd>0))
-//     {
-//       // console.log("inside sell trade");
-//       if(a===true){
-//         checkNotification(sell,scrip,floatprice);
-//       }
-//         // if(b){
-//         //     console.log("Sell trade executed");
-//         //     b=false;
-//           a=false;
-//         // }
-//     }
+    }else if((macd<signal)&&(macd>0))
+    {
+      // console.log("inside sell trade");
+      if(a===true){
+        b=taketrade(sell,scripmod,floatprice)
+      }
+        if(b){
+          checkNotification(sell,scrip,floatprice);
+          b=false;
+          a=false;
+        }
+    }
 
-//     }
+    }
 
-// setInterval(dataproc,10000)
+
     
 
 
@@ -202,91 +249,23 @@
 //   apicalls();
 
 
-// Request Payload = 
-// symbol=btcinr&side=buy&type=limit&price=100&quantity=10&recvWindow=20000&timestamp=1641300597614
- 
-// Signature = 1d1b18a7ff63d4c8c6fa7cefb99ae59929f97f100824192a035b7568c282cdfb
- 
-// POST https://api.wazirx.com/sapi/v1/order/test
-// 201
-// 1039 ms
- 
-// Request Payload = 
-// symbol=btcinr&side=buy&type=limit&price=100&quantity=10&recvWindow=20000&timestamp=1641302117490
- 
-// Signature = f7d568d9234c97f630cbba43e4d937c2077638ab8ad9abfecc43a018970ceda4
- 
-// POST https://api.wazirx.com/sapi/v1/order/test
 
 
 
 
-var axios = require('axios');
-var qs = require('qs');
-// var time=Date.now()
+// var axios = require('axios');
+// var qs = require('qs');
+// var crypto = require('crypto-js');
 
+// const secretKey = "HTb2fTioZ6NxLmgKnxH8hMdcC9NouKeLJO7n3bVo";
+// var time = new Date().getTime()
+// let Payload = "symbol=btcinr&side=buy&type=limit&price=100&quantity=10&recvWindow=20000&timestamp="+time;
+// console.log(Payload);
 
+// // const secret = 'btcinr&side=buy&type=limit&price=100&quantity=10&recvWindow=20000&timestamp=1641302117490';
+// const signature = crypto.HmacSHA256(Payload,secretKey)+''
 
-
-// var navigator = {}; //fake a navigator object for the lib
-// var window = {}; //fake a window object for the lib
-// const privateKey = pm.environment.get("rsa_private_key");
-
-const secretKey = "HTb2fTioZ6NxLmgKnxH8hMdcC9NouKeLJO7n3bVo";
-
-// Set Current Time
-var time = new Date().getTime()
-// postman.setEnvironmentVariable("current_time", time)
-
-// query_a = pm.request.body.urlencoded.toObject(true)
-
-// Generate Request Payload
-// let query_string_array = []
-// Object.keys(query_a).forEach(function(key) {
-//     if (key == 'signature') { return }
-//     if (key == 'timestamp') {
-//         query_string_array.push(key + "=" + time)
-//     }
-//     else if (typeof query_a[key] == "string") {
-//         query_string_array.push(key + "=" + query_a[key])
-//     } else {
-//         query_a[key].forEach(function(value){
-//             query_string_array.push(key + "=" + value)
-//         })
-//     }
-// })
-
-// const payload = query_string_array.join("&")
-// console.log("Request Payload = ", payload)
-
-// if(secretKey) {
-    const signature = CryptoJS.HmacSHA256(payload, secretKey) + ''
-    // pm.environment.set("signature", signature)
-    console.log("Signature = "+signature);
-// } else {
-    // Download RSA Library
-    // pm.sendRequest(pm.environment.get("rsa_library_js"), function (err, res) {
-
-    //     if (err){
-    //         console.log("Error: " + err);
-    //     }
-    //     else {
-    //         // Compile & Run RSA Library
-    //         eval(res.text())();
-
-    //         // Sign Payload
-    //         var signatureLib = new KJUR.crypto.Signature({"alg": "SHA256withRSA"});
-    //         signatureLib.init(privateKey);
-    //         signatureLib.updateString(payload);
-    //         var signatureHash = hex2b64(signatureLib.sign());
-    //         console.log("Signature = ", signatureHash)
-
-    //         // Assign Values
-    //         pm.environment.set("signature", signatureHash)
-    //     }
-    // })
-// }
-
+// console.log('Hash successfully generated: ', signature);
 
 
 // var data = qs.stringify({
@@ -297,7 +276,7 @@ var time = new Date().getTime()
 //   'quantity': '10',
 //   'recvWindow': '20000',
 //   'timestamp': time,
-//   'signature': '1d1b18a7ff63d4c8c6fa7cefb99ae59929f97f100824192a035b7568c282cdfb' 
+//   'signature': signature 
 // });
 // var config = {
 //   method: 'post',
