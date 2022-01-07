@@ -6,6 +6,9 @@ var axios = require('axios');
 var qs = require('qs');
 var crypto = require('crypto-js');
 var bodyParser = require('body-parser')
+const mongoose=require('mongoose');
+// const trade=require('./models/trade');
+const trade = require('./models/trade');
 const port = 3001;
 
 app.use(cors({
@@ -16,13 +19,37 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
+const url = "mongodb+srv://braincodeishan:Mongodb_88822@cluster0.gicls.mongodb.net/robo?retryWrites=true&w=majority"
+mongoose.connect(url)
+.then((res)=>{
+  console.log("connection successful to db");
+})
+.catch((err)=>{
+  console.log(err);
+})
+
+
+
 app.post('/', function (req, res) {
-    console.log(req.body);
-    const secretKey = "HTb2fTioZ6NxLmgKnxH8hMdcC9NouKeLJO7n3bVo";
+
+
+
+
+console.log(req.body);
+const secretKey = "HTb2fTioZ6NxLmgKnxH8hMdcC9NouKeLJO7n3bVo";
 var time = new Date().getTime()
 let Payload = "symbol="+req.body.symbol+"&side="+req.body.side+"&type=limit&price="+req.body.price+"&quantity="+req.body.quantity+"&recvWindow=20000&timestamp="+time;
 console.log(Payload);
 
+
+let mytrade=new trade({
+  Scrip:req.body.symbol,
+  Side:req.body.side,
+  Price:req.body.price,
+  Quantity:req.body.quantity,
+  Timestamp:time
+
+})
 // const secret = 'btcinr&side=buy&type=limit&price=100&quantity=10&recvWindow=20000&timestamp=1641302117490';
 const signature = crypto.HmacSHA256(Payload,secretKey)+''
 
@@ -55,6 +82,13 @@ axios(config)
   console.log(JSON.stringify(response.data));
   const resdata= JSON.stringify(response.data)
   res.send(resdata);
+  mytrade.save()
+  .then((res)=>{
+    console.log("trade data logged to Database");
+  })
+  .catch((err)=>{
+    console.log("Somewhere failed in inserting data to database");
+  })
 })
 .catch(function (error) {
   console.log(error);
@@ -68,4 +102,9 @@ axios(config)
   app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
   })
+
+
+
+
+
 
